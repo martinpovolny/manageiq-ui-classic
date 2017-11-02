@@ -155,7 +155,7 @@ module QuadiconHelper
   def quadicon_builder_factory(item, options)
     case quadicon_builder_name_from(item)
     when 'service', 'service_template', 'service_ansible_tower', 'service_template_ansible_tower'
-      render_service_quadicon(item, options.merge!(:url => "/service/explorer/s-#{item.id}"))
+      render_service_quadicon(item, options.merge!(:url => "/service/show/#{item.id}"))
     when 'resource_pool'         then render_resource_pool_quadicon(item, options)
     when 'host'                  then render_host_quadicon(item, options)
     when 'ext_management_system' then render_ext_management_system_quadicon(item, options)

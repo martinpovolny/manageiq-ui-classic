@@ -256,6 +256,9 @@ class ServiceController < ApplicationController
     @nodetype, id = parse_nodetype_and_id(valid_active_node(treenodeid))
     # resetting action that was stored during edit to determine what is being edited
     @sb[:action] = nil
+
+    @nodetype, id = parse_nodetype_and_id(params[:id]) if params[:id]
+
     case TreeBuilder.get_model_for_prefix(@nodetype)
     when "Service"  # VM or Template record, show the record
       show_record(from_cid(id))
