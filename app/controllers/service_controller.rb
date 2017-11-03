@@ -67,14 +67,13 @@ class ServiceController < ApplicationController
       return
     end
 
-    build_accordions_and_trees
-
     if params[:id]  # If a tree node id came in, show in one of the trees
       @find_with_aggregates = true
       nodetype, id = params[:id].split("-")
       self.x_node = "#{nodetype}-#{to_cid(id)}"
-      get_node_info(x_node)
     end
+
+    build_accordions_and_trees
 
     params.instance_variable_get(:@parameters).merge!(session[:exp_parms]) if session[:exp_parms]  # Grab any explorer parm overrides
     session.delete(:exp_parms)
@@ -257,7 +256,8 @@ class ServiceController < ApplicationController
     # resetting action that was stored during edit to determine what is being edited
     @sb[:action] = nil
 
-    @nodetype, id = parse_nodetype_and_id(params[:id]) if params[:id]
+    #binding.pry
+    #@nodetype, id = parse_nodetype_and_id(params[:id]) if params[:id]
 
     case TreeBuilder.get_model_for_prefix(@nodetype)
     when "Service"  # VM or Template record, show the record
