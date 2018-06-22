@@ -3,8 +3,6 @@ class ApplicationHelper::Toolbar::Basic
   extend SingleForwardable
   delegate %i(api_button button select twostate separator definition button_group custom_content) => :instance
 
-  attr_reader :definition
-
   def custom_content(name, args)
     @definition[name] = ApplicationHelper::Toolbar::Custom.new(name, args)
   end
@@ -44,9 +42,42 @@ class ApplicationHelper::Toolbar::Basic
     {:separator => true}
   end
 
+  def definition
+    unless @loaded
+      load_overrides
+      @loaded = true
+    end
+    
+    @definition
+  end
+
   private
 
+  def extension_classes
+    return [] if self.class.name.nil?
+
+    Vmdb::Plugins.instance.vmdb_plugins.collect do |plugin|                                            
+      name = plugin.root.join(
+        'app/toolbar_overrides',
+        self.class.name.to_s.split('::').last.underscore
+      )
+      name = "#{name}.rb"
+      if File.exist?(name)
+        require name
+        instance = [plugin.class.name.sub('::Engine',''), 'Toolbar', self.class.name.to_s.split('::').last].join('::')
+        instance.constantize
+      end
+    end.compact
+  end
+
+  def load_overrides
+    extension_classes.each do |klass|
+      @definition.merge!(klass.definition)
+    end
+  end
+
   def initialize
+    @loaded = false
     @definition = {}
   end
 
